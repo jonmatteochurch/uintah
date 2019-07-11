@@ -49,7 +49,9 @@ set PATCH_FILE = "buildbot_patch.txt"
 set USE_GIT = `svn info >& /dev/null && echo false || git svn info >& /dev/null && echo true || echo false`
 
 set VC = "--vc=svn"
-set REBOSITORY = ""
+set TOPDIR = "--topdir=."
+set BASEREV = ""
+set REPOSITORY = ""
 set DIFF = ""
 
 # No args so all tests
@@ -149,6 +151,8 @@ if ( $USE_GIT == "true" ) then
   ls -l $PATCH_FILE
 
   set VC = ""
+  set TOPDIR = ""
+  set BASEREV = "--baserev=$SVN_REV"
   set DIFF = "--diff=$PATCH_FILE"
   set REPOSITORY = "--repository=https://gforge.sci.utah.edu/svn/uintah/trunk/src"
 
@@ -160,6 +164,8 @@ else if( $CREATE_PATCH == "true" ) then
   ls -l $PATCH_FILE
 
   set VC = ""
+  set TOPDIR = ""
+  set BASEREV = `svn status -u | grep 'Status against revision' | sed 's/^Status against revision:[ ]*\([0-9]*\)$/--baserev=\1/'`
   set DIFF = "--diff=$PATCH_FILE"
   set REPOSITORY = "--repository=https://gforge.sci.utah.edu/svn/uintah/trunk/src"
 endif
@@ -187,20 +193,8 @@ echo buildbot --verbose try \
          --master=uintah-build.chpc.utah.edu:8031 \
          --username=buildbot_try \
          --passwd=try_buildbot \
-         --topdir=. \
          --who=`whoami` \
-         $VC $DIFF $REPOSITORY $BUILDERS
-
-#buildbot --verbose try \
-#         --connect=pb \
-#         --master=uintah-build.chpc.utah.edu:8031 \
-#         --username=buildbot_try \
-#         --passwd=try_buildbot \
-#         --topdir=. \
-#         --who=`whoami` \
-#         $VC $DIFF $REPOSITORY $BUILDERS
-
-echo $status
+         $VC $TOPDIR $BASEREV $DIFF $REPOSITORY $BUILDERS
 
 # cleanup
 if( $CREATE_PATCH == "true" || $USE_GIT == "true" ) then
