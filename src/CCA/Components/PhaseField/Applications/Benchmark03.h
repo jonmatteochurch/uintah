@@ -71,7 +71,7 @@ namespace PhaseField
 template < VarType VAR, StnType STN >
 class Benchmark03
     : public Application< Problem<VAR, STN> >
-    , public Implementation<Benchmark03<VAR, STN>, UintahParallelComponent, const ProcessorGroup *, const MaterialManagerP, const std::string &, int >
+    , public Implementation<Benchmark03<VAR, STN>, UintahParallelComponent, const ProcessorGroup *, const MaterialManagerP, int >
 {
     /// Problem material index (only one SimpleMaterial)
     static constexpr int material = 0;
@@ -124,7 +124,6 @@ public: // CONSTRUCTORS/DESTRUCTOR
     Benchmark03 (
         const ProcessorGroup * myworld,
         const MaterialManagerP materialManager,
-        const std::string & uda,
         int verbosity = 0
     );
 
@@ -468,7 +467,6 @@ template<VarType VAR, StnType STN>
 Benchmark03<VAR, STN>::Benchmark03 (
     const ProcessorGroup * myWorld,
     const MaterialManagerP materialManager,
-    const std::string &,
     int verbosity
 ) : Application< Problem<VAR, STN> > ( myWorld, materialManager, verbosity )
 {
@@ -763,13 +761,6 @@ void Benchmark03<VAR, STN>::initialize_solution (
 )
 {
     Vector v ( this->get_position ( patch, id ).asVector() );
-
-#if defined(__INTEL_COMPILER) && defined(BUG_WORKAROUND)
-    // BUG workaround
-    std::stringstream ss;
-    ss << v << std::endl;
-#endif
-
     const double & x = v[0];
     u[id] = cos ( 2. * x ) + 0.01 * exp ( cos ( x + 0.1 ) );
 }

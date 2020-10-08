@@ -73,7 +73,7 @@ namespace PhaseField
 template < VarType VAR, StnType STN >
 class Benchmark02
     : public Application< Problem<VAR, STN> >
-    , public Implementation<Benchmark02<VAR, STN>, UintahParallelComponent, const ProcessorGroup *, const MaterialManagerP, const std::string &, int >
+    , public Implementation<Benchmark02<VAR, STN>, UintahParallelComponent, const ProcessorGroup *, const MaterialManagerP, int >
 {
 private: // STATIC MEMBERS
 
@@ -131,7 +131,6 @@ public: // CONSTRUCTORS/DESTRUCTOR
     Benchmark02 (
         const ProcessorGroup * myworld,
         const MaterialManagerP materialManager,
-        const std::string & uda,
         int verbosity = 0
     );
 
@@ -475,7 +474,6 @@ template<VarType VAR, StnType STN>
 Benchmark02<VAR, STN>::Benchmark02 (
     const ProcessorGroup * myWorld,
     const MaterialManagerP materialManager,
-    const std::string &,
     int verbosity
 ) : Application< Problem<VAR, STN> > ( myWorld, materialManager, verbosity )
 {
@@ -789,14 +787,6 @@ void Benchmark02<VAR, STN>::initialize_solution (
     double rc[] = { 0.1, 0.0666666666667, 0.0666666666667, 0.05, 0.05, 0.125,  0.125 };
 
     Vector v ( this->get_position ( patch, id ).asVector() );
-
-#if defined(__INTEL_COMPILER) && defined(BUG_WORKAROUND)
-    // BUG workaround
-    std::stringstream ss;
-    ss << v << std::endl;
-#endif
-
-
     for ( int i = 0; i < Ncirc; ++i )
     {
         Vector r ( v );
